@@ -121,6 +121,17 @@
                             <div>
                               <div class="variant-platform">{{ variant.platform }}</div>
                               <div class="variant-name">{{ variant.display_name || activeProduct.product.name }}</div>
+                              <button
+                                type="button"
+                                class="variant-id"
+                                :class="{ copied: copiedVariantId === variant.id }"
+                                :title="t.apps.copyVariantId"
+                                @click.stop="copyVariantId(variant.id)"
+                              >
+                                <span class="variant-id-label">{{ t.apps.variantId }}</span>
+                                <span class="variant-id-value">{{ variant.id }}</span>
+                                <Icon :name="copiedVariantId === variant.id ? 'check' : 'copy'" :size="12" />
+                              </button>
                             </div>
                             <span v-if="variant.published" class="status-dot status-on"><i></i>{{ t.apps.published }}</span>
                             <span v-else class="status-dot status-off"><i></i>{{ t.apps.unpublished }}</span>
@@ -280,6 +291,34 @@ const activeProduct = ref<ProductDetail | null>(null)
 const activeProductId = ref('')
 const updatingProductId = ref('')
 const updatingVariantId = ref('')
+const copiedVariantId = ref('')
+let copiedVariantTimer: ReturnType<typeof setTimeout> | undefined
+
+async function copyVariantId(id: string) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(id)
+    } else {
+      // Fallback for plain-HTTP deployments where the Clipboard API is unavailable
+      const el = document.createElement('textarea')
+      el.value = id
+      el.setAttribute('readonly', '')
+      el.style.position = 'fixed'
+      el.style.opacity = '0'
+      document.body.appendChild(el)
+      el.select()
+      const ok = document.execCommand('copy')
+      document.body.removeChild(el)
+      if (!ok) throw new Error('copy failed')
+    }
+    copiedVariantId.value = id
+    toast.success(t.value.apps.copied + ': ' + id)
+    clearTimeout(copiedVariantTimer)
+    copiedVariantTimer = setTimeout(() => { copiedVariantId.value = '' }, 1500)
+  } catch {
+    toast.error(t.value.apps.copyFailed)
+  }
+}
 const creatingProduct = ref(false)
 const creatingVariant = ref(false)
 const showUploadModal = ref(false)
@@ -796,6 +835,10 @@ async function updateProductPublished(product: ProductSummary, published: boolea
   margin-bottom: 14px;
 }
 
+.variant-head > div:first-child {
+  min-width: 0;
+}
+
 .variant-platform {
   font-size: 12px;
   text-transform: uppercase;
@@ -806,6 +849,46 @@ async function updateProductPublished(product: ProductSummary, published: boolea
   font-size: 18px;
   font-weight: 600;
   color: var(--text-bright);
+}
+
+.variant-id {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  margin-top: 6px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.variant-id:hover {
+  color: var(--text-bright);
+  border-color: var(--text-dim);
+}
+
+.variant-id.copied {
+  color: var(--green);
+  border-color: currentColor;
+}
+
+.variant-id-label {
+  color: var(--text-dim);
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.variant-id-value {
+  font-family: monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .variant-meta,

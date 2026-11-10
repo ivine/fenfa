@@ -70,6 +70,9 @@ export default {
     secondaryDomain: '分发域名',
     copyUrl: '复制URL',
     copied: '已复制',
+    copyFailed: '复制失败',
+    variantId: '变体 ID',
+    copyVariantId: '点击复制变体 ID（上传时使用的 variant_id）',
 
     qrCode: '二维码',
     qrFor: '二维码链接',

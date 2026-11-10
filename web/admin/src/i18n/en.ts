@@ -70,6 +70,9 @@ export default {
     secondaryDomain: 'Distribution Domain',
     copyUrl: 'Copy URL',
     copied: 'Copied',
+    copyFailed: 'Failed to copy',
+    variantId: 'Variant ID',
+    copyVariantId: 'Click to copy variant ID (variant_id for uploads)',
 
     qrCode: 'QR Code',
     qrFor: 'QR for',
