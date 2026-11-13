@@ -4,3 +4,5 @@
 - 验证：git diff --check、前台和后台 npm run build、go test ./internal/server/... 均通过。
 
 - [x] 默认入口进入后台，下载目录迁移至 `/catalog`，同步客户端链接。
+
+- [x] GitHub Actions 支持 AMD64、ARM64 镜像构建并发布到 GHCR。
