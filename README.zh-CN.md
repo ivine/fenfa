@@ -113,3 +113,16 @@ Fenfa 是 [OpenPRX](https://github.com/openprx) 的一部分，欢迎提交 Issu
 ## 开源协议
 
 [MIT](LICENSE)
+
+### GitHub 分架构镜像构建
+
+推送工作流到 GitHub 默认分支后，在 Actions 中按需手动运行：
+
+| 工作流 | 原生构建环境 | 镜像 |
+| --- | --- | --- |
+| Build Docker Image (ARM64) | ubuntu-24.04-arm | ghcr.io/ivine/fenfa:arm64 |
+| Build Docker Image (AMD64) | ubuntu-24.04 | ghcr.io/ivine/fenfa:amd64 |
+
+64 位树莓派只需运行 ARM64 工作流，并将 Compose 的 `image` 设置为 `ghcr.io/ivine/fenfa:arm64`，然后执行 `docker compose pull && docker compose up -d`。两个工作流独立触发、独立缓存，使用 GitHub 自动提供的 `GITHUB_TOKEN` 发布镜像。
+
+这两个工作流不再更新原来的 `latest` 标签，请按设备架构切换标签。私有镜像需要先在部署机器上登录 GHCR。
