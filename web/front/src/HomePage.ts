@@ -123,7 +123,7 @@ export default {
       <header class="sf-header">
         <div class="sf-header-inner">
           <span class="sf-header-spacer" aria-hidden="true"></span>
-          <a href="/" class="sf-wordmark" aria-label="Fenfa"><span>fen</span><span>fa</span></a>
+          <a href="/catalog" class="sf-wordmark" aria-label="Fenfa"><span>fen</span><span>fa</span></a>
           <button v-if="authEnabled && !needsLogin && !loading" type="button" class="sf-round-button" :disabled="submitting" :aria-label="t.auth.logout" :title="t.auth.logout" @click="logout" v-html="icons.signOut"></button>
           <span v-else class="sf-header-spacer" aria-hidden="true"></span>
         </div>

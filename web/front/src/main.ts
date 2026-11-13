@@ -189,7 +189,7 @@ const App = {
       const endpoint = `/api/products/${resourceID}`
       const res = await fetch(endpoint + (selectedReleaseID ? `?r=${encodeURIComponent(selectedReleaseID)}` : ''), { cache: 'no-store' })
       if (res.status === 401) {
-        location.replace('/')
+        location.replace('/catalog')
         return
       }
       const payload = await res.json()
@@ -421,8 +421,8 @@ const App = {
   <div class="sf-page">
     <header class="sf-header">
       <div class="sf-header-inner">
-        <a href="/" class="sf-round-button" :aria-label="t.actions.allProducts" :title="t.actions.allProducts" v-html="icons.back"></a>
-        <a href="/" class="sf-wordmark" aria-label="Fenfa"><span>fen</span><span>fa</span></a>
+        <a href="/catalog" class="sf-round-button" :aria-label="t.actions.allProducts" :title="t.actions.allProducts" v-html="icons.back"></a>
+        <a href="/catalog" class="sf-wordmark" aria-label="Fenfa"><span>fen</span><span>fa</span></a>
         <span class="sf-header-spacer" aria-hidden="true"></span>
       </div>
     </header>
@@ -571,4 +571,4 @@ const App = {
   </div>`
 }
 
-createApp(location.pathname === '/' ? HomePage : App).mount('#app')
+createApp(['/', '/catalog'].includes(location.pathname) ? HomePage : App).mount('#app')

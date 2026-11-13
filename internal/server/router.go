@@ -74,11 +74,11 @@ func RegisterRoutes(g *gin.Engine, db *gorm.DB, cfg *config.Config) {
 	upload.OPTIONS("/smart-upload", func(c *gin.Context) { c.Status(204) })
 	upload.POST("/smart-upload", middleware.RequireToken(cfg, "upload"), handlers.SmartUpload(db, cfg))
 	upload.OPTIONS("/admin/api/parse-app", func(c *gin.Context) { c.Status(204) })
-	upload.POST("/admin/api/parse-app", middleware.RequireToken(cfg, "admin"), handlers.ParseAppInfo())
+	upload.POST("/admin/api/parse-app", middleware.RequireToken(cfg, "upload"), handlers.ParseAppInfo())
 
 	// Admin APIs
 	admin := g.Group("/admin")
-	admin.Use(middleware.RequireToken(cfg, "admin"))
+	// 内网管理接口免登录，上传接口仍单独校验 Token。
 	// JSON
 	admin.GET("/api/events", handlers.AdminListEvents(db))
 	admin.GET("/api/ios_devices", handlers.AdminListIOSDevices(db))
@@ -121,24 +121,26 @@ func RegisterRoutes(g *gin.Engine, db *gorm.DB, cfg *config.Config) {
 	admin.GET("/exports/events.csv", handlers.ExportEvents(db))
 	admin.GET("/exports/ios_devices.csv", handlers.ExportIOSDevices(db))
 
-	// Client product catalog
-	g.GET("/", func(c *gin.Context) {
+	// 客户端下载目录
+	g.GET("/catalog", func(c *gin.Context) {
 		c.Header("Cache-Control", "private, no-store")
 		c.Header("Referrer-Policy", "no-referrer")
 		if cfg.Server.DevProxyFront != "" {
-			c.Redirect(http.StatusTemporaryRedirect, cfg.Server.DevProxyFront+"/")
+			c.Redirect(http.StatusTemporaryRedirect, cfg.Server.DevProxyFront+"/catalog")
 			return
 		}
 		c.HTML(http.StatusOK, "app.html", gin.H{"Title": "Fenfa", "Message": ""})
 	})
 
-	// Admin HTML page (public page; exports under /admin/exports require token)
-	g.GET("/admin", func(c *gin.Context) {
+	// 根路径和 /admin 均直接进入内网管理后台。
+	adminPage := func(c *gin.Context) {
 		if cfg.Server.DevProxyAdmin != "" {
 			target := cfg.Server.DevProxyAdmin + "/"
 			c.Redirect(http.StatusTemporaryRedirect, target)
 			return
 		}
 		c.HTML(http.StatusOK, "admin.html", gin.H{"Title": "Modern distribution"})
-	})
+	}
+	g.GET("/", adminPage)
+	g.GET("/admin", adminPage)
 }

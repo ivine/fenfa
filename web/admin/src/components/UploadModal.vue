@@ -7,6 +7,7 @@
       </div>
 
       <div class="modal-body">
+<div class="form-group"><label class="label">上传 Token</label><input v-model="uploadToken" type="password" class="input" placeholder="请输入上传 Token" autocomplete="off"></div>
         <div class="app-info-section">
           <div class="info-item">
             <span class="info-label">{{ t.uploadModal.appName }}:</span>
@@ -120,6 +121,9 @@
 </template>
 
 <script setup lang="ts">
+import { useAuth } from '../composables/useAuth'
+const { token: uploadToken } = useAuth()
+
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useI18n } from '../i18n'
 
@@ -169,7 +173,7 @@ const canUpload = computed(() => {
 
 onMounted(async () => {
   try {
-    const token = localStorage.getItem('fenfa_admin_token') || ''
+    const token = uploadToken.value
     const res = await fetch('/admin/api/upload-config', {
       headers: { 'X-Auth-Token': token }
     })
@@ -258,7 +262,7 @@ async function handleUpload() {
   uploadResult.value = null
 
   try {
-    const token = localStorage.getItem('fenfa_admin_token') || ''
+    const token = uploadToken.value
     const xhr = new XMLHttpRequest()
 
     xhr.upload.addEventListener('progress', (event) => {

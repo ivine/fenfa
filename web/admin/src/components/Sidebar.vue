@@ -25,10 +25,7 @@
           <Icon :name="isDark ? 'sun' : 'moon'" :size="16" />
         </button>
       </div>
-      <button @click="$emit('logout')" class="btn-secondary btn-full">
-        <span class="logout-icon"><Icon name="log-out" :size="18" /></span>
-        <span v-if="!collapsed">{{ t.common.logout }}</span>
-      </button>
+
     </div>
   </aside>
 </template>
@@ -44,9 +41,6 @@ defineProps<{
   collapsed?: boolean
 }>()
 
-defineEmits<{
-  logout: []
-}>()
 
 const { t } = useI18n()
 const { isDark, toggleTheme } = useTheme()

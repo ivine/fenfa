@@ -38,7 +38,7 @@ Fenfa（分发）是一个自托管的多平台应用分发系统，支持 iOS�
 docker run -d --name fenfa -p 8000:8000 fenfa/fenfa:latest
 ```
 
-访问 `http://localhost:8000/admin`，使用默认 Token `dev-admin-token` 登录。
+访问 `http://localhost:8000`（或 `/admin`） 直接进入内网管理后台，无需登录。客户端下载目录位于 `/catalog`。上传时填写上传 Token，默认值为 `dev-upload-token`，可通过 `FENFA_UPLOAD_TOKEN` 配置。管理 API 同样免登录，部署时仅向受信任内网开放。
 
 **生产部署** — 自定义 Token + 持久化存储：
 

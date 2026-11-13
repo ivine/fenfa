@@ -1,15 +1,6 @@
 <template>
-  <!-- Login Page -->
-  <LoginPage
-    v-if="!isLoggedIn"
-    @login="handleLogin"
-  />
-
-  <!-- Main Layout -->
-  <div v-else class="main-layout">
-    <Sidebar
-      @logout="handleLogout"
-    />
+  <div class="main-layout">
+    <Sidebar />
 
     <main class="main-content">
       <div class="content-wrapper">
@@ -27,16 +18,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useI18n } from './i18n'
-import { useAuth } from './composables/useAuth'
 import { useProducts } from './composables/useProducts'
 import { provideToast } from './composables/useToast'
 import { provideConfirmDialog } from './composables/useConfirmDialog'
 import Icon from './components/Icon.vue'
 import Toast from './components/Toast.vue'
 import ConfirmDialog from './components/ConfirmDialog.vue'
-import LoginPage from './pages/LoginPage.vue'
 import Sidebar from './components/Sidebar.vue'
 
 const { t } = useI18n()
@@ -45,38 +34,9 @@ const confirmRef = ref<InstanceType<typeof ConfirmDialog>>()
 provideToast(toastRef as any)
 provideConfirmDialog(confirmRef as any)
 
-const { token, isLoggedIn, handleLogin: authLogin, doLogout, handleAuthError } = useAuth()
-const { fetchProducts, clearProducts } = useProducts()
-
+const { fetchProducts } = useProducts()
 const isDev = import.meta.env.DEV
-
-function handleLogin(newToken: string) {
-  authLogin(newToken)
-  fetchProducts()
-}
-
-async function handleLogout() {
-  const confirmed = await confirmRef.value?.show({
-    title: t.value.common.logout,
-    message: t.value.messages.confirmLogout,
-    confirmText: t.value.common.logout,
-    cancelText: t.value.common.cancel,
-    type: 'danger'
-  })
-  if (!confirmed) return
-  doLogout()
-}
-
-watch(token, (v) => {
-  if (v) fetchProducts()
-  else clearProducts()
-})
-
-onMounted(() => {
-  if (token.value) {
-    fetchProducts()
-  }
-})
+onMounted(fetchProducts)
 </script>
 
 <style scoped>

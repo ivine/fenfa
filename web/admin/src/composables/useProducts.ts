@@ -9,7 +9,6 @@ export function useProducts() {
   const { token, handleAuthError } = useAuth()
 
   async function fetchProducts() {
-    if (!token.value) return
     loadingProducts.value = true
     try {
       const p = new URLSearchParams()

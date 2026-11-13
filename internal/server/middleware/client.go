@@ -54,7 +54,7 @@ func (a *ClientAccess) RequirePage() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		clientNoStore(c)
 		if !a.authenticated(c) {
-			c.Redirect(http.StatusSeeOther, "/")
+			c.Redirect(http.StatusSeeOther, "/catalog")
 			c.Abort()
 			return
 		}
@@ -77,7 +77,7 @@ func (a *ClientAccess) RequireDownload() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		clientNoStore(c)
 		if !a.authenticated(c) && !a.access.Valid(c.Query("access_token"), clientauth.DownloadScope, c.Param("releaseID")) {
-			c.Redirect(http.StatusSeeOther, "/")
+			c.Redirect(http.StatusSeeOther, "/catalog")
 			c.Abort()
 			return
 		}

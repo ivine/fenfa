@@ -111,7 +111,7 @@ func TestClientPasswordProtectsPagesAndAPIs(t *testing.T) {
 	g, _, _ := clientTestSetup(t, "test-client-password")
 	for _, path := range []string{"/products/prd_client", "/products/client-product", "/apps/legacy", "/d/rel_ios", "/ios/rel_ios/manifest.plist", "/udid/profile.mobileconfig"} {
 		w := clientRequest(g, "GET", path, "", nil)
-		if w.Code != http.StatusSeeOther || w.Header().Get("Location") != "/" || strings.Contains(w.Body.String(), "Client Product") {
+		if w.Code != http.StatusSeeOther || w.Header().Get("Location") != "/catalog" || strings.Contains(w.Body.String(), "Client Product") {
 			t.Fatalf("unprotected page %s: %d %s", path, w.Code, w.Body.String())
 		}
 	}
@@ -126,7 +126,7 @@ func TestClientPasswordProtectsPagesAndAPIs(t *testing.T) {
 			t.Fatalf("unprotected POST %s: %d", path, w.Code)
 		}
 	}
-	for _, path := range []string{"/", "/healthz", "/admin"} {
+	for _, path := range []string{"/", "/catalog", "/healthz", "/admin"} {
 		if w := clientRequest(g, "GET", path, "", nil); w.Code != http.StatusOK {
 			t.Fatalf("public entry %s: %d", path, w.Code)
 		}
@@ -154,8 +154,8 @@ func TestClientSessionLoginPersistenceLogoutAndAdminIsolation(t *testing.T) {
 	if w := clientRequest(restarted, "GET", "/api/products", "", cookie); w.Code != http.StatusOK {
 		t.Fatalf("session did not survive restart: %d", w.Code)
 	}
-	if w := clientRequest(g, "GET", "/admin/api/products", "", cookie); w.Code != http.StatusUnauthorized {
-		t.Fatalf("client cookie granted admin access: %d", w.Code)
+	if w := clientRequest(g, "GET", "/admin/api/products", "", cookie); w.Code != http.StatusOK {
+		t.Fatalf("internal admin API should allow access without admin token: %d", w.Code)
 	}
 	if w := clientRequest(g, "POST", "/api/client/login", `{"password":"test-admin-token"}`, nil); w.Code != http.StatusUnauthorized {
 		t.Fatalf("admin token accepted as client password: %d", w.Code)
@@ -342,7 +342,7 @@ func TestClientPagesReferenceVersionedEmbeddedAssets(t *testing.T) {
 	g.StaticFS("/static/admin", http.FS(web.Admin()))
 	cookie := clientLogin(t, g)
 	pattern := regexp.MustCompile(`(?:src|href)="(/static/(?:front|admin)/[a-f0-9]{16}/(?:app\.js|style\.css))"`)
-	for _, path := range []string{"/", "/products/client-product", "/admin"} {
+	for _, path := range []string{"/", "/catalog", "/products/client-product", "/admin"} {
 		w := clientRequest(g, "GET", path, "", cookie)
 		matches := pattern.FindAllStringSubmatch(w.Body.String(), -1)
 		if w.Code != http.StatusOK || len(matches) != 2 {
