@@ -249,7 +249,7 @@ async function handleUpload() {
   if (!props.variant || !selectedFile.value || !form.version) return
 
   const fd = new FormData()
-  fd.set('variant_id', props.variant.id)
+  fd.set('platform_id', props.variant.id)
   fd.set('version', form.version)
   if (form.build) fd.set('build', form.build)
   if (form.channel) fd.set('channel', form.channel)

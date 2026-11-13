@@ -126,3 +126,21 @@ Fenfa 是 [OpenPRX](https://github.com/openprx) 的一部分，欢迎提交 Issu
 64 位树莓派只需运行 ARM64 工作流，并将 Compose 的 `image` 设置为 `ghcr.io/ivine/fenfa:arm64`，然后执行 `docker compose pull && docker compose up -d`。两个工作流独立触发、独立缓存，使用 GitHub 自动提供的 `GITHUB_TOKEN` 发布镜像。
 
 这两个工作流不再更新原来的 `latest` 标签，请按设备架构切换标签。私有镜像需要先在部署机器上登录 GHCR。
+
+### 命令行智能上传
+
+先在后台复制平台 ID，在应用项目目录执行（APK 或 IPA）：
+
+```bash
+export FENFA_HOST="http://localhost:8000"
+export FENFA_TOKEN="你的上传 Token"
+export FENFA_PLATFORM_ID="var_xxx"
+curl --fail-with-body --show-error "$FENFA_HOST/smart-upload" \
+  -H "X-Auth-Token: $FENFA_TOKEN" \
+  -F "platform_id=$FENFA_PLATFORM_ID" \
+  -F "app_file=@./build/app/outputs/flutter-apk/app-release.apk"
+```
+
+普通上传 `/upload` 同样使用 `platform_id`。旧参数 `variant_id` 仍兼容，两者同时提供时优先使用非空的 `platform_id`。平台 ID 的值不变，仍可使用现有的 `var_` 前缀 ID。
+
+也可将本项目的 `scripts/upload.sh` 复制到应用项目，从应用根目录运行 `bash ./scripts/upload.sh android`（或 `ios`、`all`）。同时上传两个平台时，分别设置 `FENFA_ANDROID_PLATFORM_ID` 和 `FENFA_IOS_PLATFORM_ID`。

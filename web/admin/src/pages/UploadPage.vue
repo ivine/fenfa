@@ -212,7 +212,7 @@ async function doUpload() {
   }
 
   const fd = new FormData()
-  fd.set('variant_id', selectedVariant.value.id)
+  fd.set('platform_id', selectedVariant.value.id)
   fd.set('version', form.version)
   if (form.build) fd.set('build', form.build)
   if (form.channel) fd.set('channel', form.channel)

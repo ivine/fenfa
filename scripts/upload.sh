@@ -6,11 +6,13 @@
 # Environment variables:
 #   FENFA_HOST    — Upload URL (default: http://localhost:8000)
 #   FENFA_TOKEN   — Auth token (default: dev-upload-token)
+#   FENFA_PLATFORM_ID — 单平台上传的平台 ID
+#   FENFA_ANDROID_PLATFORM_ID / FENFA_IOS_PLATFORM_ID — 分别指定 Android / iOS 平台 ID
 #   CHANGELOG     — Release notes
 #   CHANNEL       — Channel (default: internal)
 set -e
 
-cd "$(dirname "$0")/.."
+# 在调用者的应用项目目录中查找构建产物。
 
 TARGET="${1:-all}"
 HOST="${FENFA_HOST:-http://localhost:8000}"
@@ -23,6 +25,11 @@ IPA=$(find build/ios/ipa -name "*.ipa" 2>/dev/null | head -1)
 
 upload_file() {
     local file="$1"
+    local platform_id="$2"
+    if [ -z "$platform_id" ]; then
+        echo "Missing platform ID: set FENFA_PLATFORM_ID or the platform-specific variable" >&2
+        return 1
+    fi
     local name=$(basename "$file")
     local size=$(du -h "$file" | cut -f1)
 
@@ -30,7 +37,7 @@ upload_file() {
 
     local args=(-s -w "\n%{http_code}" -X POST "$ENDPOINT")
     args+=(-H "X-Auth-Token: $TOKEN")
-    args+=(-F "app_file=@$file")
+    args+=(-F "app_file=@$file" -F "platform_id=$platform_id")
     [ -n "$CHANNEL" ]   && args+=(-F "channel=$CHANNEL")
     [ -n "$CHANGELOG" ] && args+=(-F "changelog=$CHANGELOG")
 
@@ -58,7 +65,7 @@ UPLOADED=0
 if [ "$TARGET" = "android" ] || [ "$TARGET" = "all" ]; then
     if [ -f "$APK" ]; then
         echo "[Android]"
-        upload_file "$APK"
+        upload_file "$APK" "${FENFA_ANDROID_PLATFORM_ID:-${FENFA_PLATFORM_ID:-}}"
         UPLOADED=$((UPLOADED + 1))
         echo ""
     else
@@ -71,7 +78,7 @@ fi
 if [ "$TARGET" = "ios" ] || [ "$TARGET" = "all" ]; then
     if [ -n "$IPA" ] && [ -f "$IPA" ]; then
         echo "[iOS]"
-        upload_file "$IPA"
+        upload_file "$IPA" "${FENFA_IOS_PLATFORM_ID:-${FENFA_PLATFORM_ID:-}}"
         UPLOADED=$((UPLOADED + 1))
         echo ""
     else

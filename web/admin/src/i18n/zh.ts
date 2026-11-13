@@ -72,7 +72,7 @@ export default {
     copied: '已复制',
     copyFailed: '复制失败',
     variantId: '平台 ID',
-    copyVariantId: '点击复制平台 ID（上传时使用的 variant_id）',
+    copyVariantId: '点击复制平台 ID（上传时使用的 platform_id）',
 
     qrCode: '二维码',
     qrFor: '二维码链接',

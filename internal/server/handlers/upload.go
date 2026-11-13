@@ -54,9 +54,13 @@ type uploadParams struct {
 // Upload handles multipart app package upload.
 func Upload(db *gorm.DB, cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		variantID := strings.TrimSpace(c.PostForm("variant_id"))
+		variantID := strings.TrimSpace(c.PostForm("platform_id"))
+		// 兼容已有上传客户端，新参数优先。
 		if variantID == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"ok": false, "error": gin.H{"code": "BAD_REQUEST", "message": "missing variant_id"}})
+			variantID = strings.TrimSpace(c.PostForm("variant_id"))
+		}
+		if variantID == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"ok": false, "error": gin.H{"code": "BAD_REQUEST", "message": "missing platform_id"}})
 			return
 		}
 		file, err := c.FormFile("app_file")
@@ -266,7 +270,7 @@ func doUpload(c *gin.Context, db *gorm.DB, cfg *config.Config, file *multipart.F
 	// meta.json snapshot (local storage only)
 	if storageType == "local" {
 		meta := map[string]any{
-			"app_id": p.LegacyAppID, "product_id": p.ProductID, "variant_id": p.VariantID, "release_id": release.ID, "platform": platform,
+			"app_id": p.LegacyAppID, "product_id": p.ProductID, "platform_id": p.VariantID, "variant_id": p.VariantID, "release_id": release.ID, "platform": platform,
 			"identifier": p.Identifier, "version": version, "build": build,
 			"min_os": minOS, "size": release.SizeBytes, "sha256": release.SHA256,
 			"changelog": changelog, "uploaded_by": "api", "uploaded_at": time.Now().UTC(),
@@ -351,7 +355,7 @@ func doUpload(c *gin.Context, db *gorm.DB, cfg *config.Config, file *multipart.F
 		"ios_manifest": manifestURL,
 		"ios_install":  "itms-services://?action=download-manifest&url=" + url.QueryEscape(manifestURL),
 	}
-	c.JSON(http.StatusCreated, gin.H{"ok": true, "data": gin.H{"app": gin.H{"id": p.LegacyAppID, "name": p.ProductName, "platform": p.Platform, "bundle_id": p.Identifier, "product_id": p.ProductID, "variant_id": p.VariantID}, "release": gin.H{"id": release.ID, "version": release.Version, "build": release.Build, "created_at": release.CreatedAt}, "urls": urls}})
+	c.JSON(http.StatusCreated, gin.H{"ok": true, "data": gin.H{"app": gin.H{"id": p.LegacyAppID, "name": p.ProductName, "platform": p.Platform, "bundle_id": p.Identifier, "product_id": p.ProductID, "platform_id": p.VariantID, "variant_id": p.VariantID}, "release": gin.H{"id": release.ID, "version": release.Version, "build": release.Build, "created_at": release.CreatedAt}, "urls": urls}})
 }
 
 // copyFile copies src to dst.

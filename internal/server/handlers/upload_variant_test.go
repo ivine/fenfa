@@ -138,8 +138,8 @@ func TestUploadRequiresVariantID(t *testing.T) {
 
 	payload := decodeJSON(t, rr)
 	errObj := payload["error"].(map[string]any)
-	if errObj["message"] != "missing variant_id" {
-		t.Fatalf("expected missing variant_id error, got %v", errObj["message"])
+	if errObj["message"] != "missing platform_id" {
+		t.Fatalf("expected missing platform_id error, got %v", errObj["message"])
 	}
 }
 
@@ -151,7 +151,7 @@ func TestUploadRejectsMismatchedExtensionForVariantPlatform(t *testing.T) {
 	cfg := config.Default()
 	variant := seedVariant(t, db, "windows", "com.example.windows")
 	req := makeMultipartRequest(t, "/upload", map[string]string{
-		"variant_id": variant.ID,
+		"platform_id": variant.ID,
 		"version":    "1.0.0",
 		"build":      "1",
 	}, "demo.apk", []byte("PK\x03\x04demo"))

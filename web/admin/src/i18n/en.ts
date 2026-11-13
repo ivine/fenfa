@@ -72,7 +72,7 @@ export default {
     copied: 'Copied',
     copyFailed: 'Failed to copy',
     variantId: 'Variant ID',
-    copyVariantId: 'Click to copy variant ID (variant_id for uploads)',
+    copyVariantId: 'Click to copy variant ID (platform_id for uploads)',
 
     qrCode: 'QR Code',
     qrFor: 'QR for',

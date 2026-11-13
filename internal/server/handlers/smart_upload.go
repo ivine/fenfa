@@ -28,9 +28,13 @@ import (
 //  6. Call doUpload to finalize (DB, S3, response)
 func SmartUpload(db *gorm.DB, cfg *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		variantID := strings.TrimSpace(c.PostForm("variant_id"))
+		variantID := strings.TrimSpace(c.PostForm("platform_id"))
+		// 兼容已有上传客户端，新参数优先。
 		if variantID == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"ok": false, "error": gin.H{"code": "BAD_REQUEST", "message": "missing variant_id"}})
+			variantID = strings.TrimSpace(c.PostForm("variant_id"))
+		}
+		if variantID == "" {
+			c.JSON(http.StatusBadRequest, gin.H{"ok": false, "error": gin.H{"code": "BAD_REQUEST", "message": "missing platform_id"}})
 			return
 		}
 

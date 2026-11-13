@@ -304,7 +304,7 @@ async function handleUpload() {
   if (!selectedFile.value || !appInfo.value || !props.variant) return
 
   const fd = new FormData()
-  fd.set('variant_id', props.variant.id)
+  fd.set('platform_id', props.variant.id)
   if (appInfo.value.version || appInfo.value.version_name) {
     fd.set('version', appInfo.value.version || appInfo.value.version_name)
   }

@@ -13,3 +13,6 @@
 
 ## 按架构独立构建镜像
 将 AMD64 和 ARM64 拆为两个手动触发的 GitHub Actions 工作流，使用各自原生 Runner 和独立镜像标签，日常仅构建 ARM64。
+
+## 上传平台参数命名
+上传接口改用 platform_id，兼容 variant_id；同步后台上传和命令行脚本。
