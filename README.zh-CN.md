@@ -34,8 +34,10 @@ Fenfa（分发）是一个自托管的多平台应用分发系统，支持 iOS�
 
 ### Docker（推荐）
 
+以下示例用于 64 位树莓派等 ARM64 设备。Intel/AMD x86-64 机器请将镜像标签 `:arm64` 替换为 `:amd64`。
+
 ```bash
-docker run -d --name fenfa -p 8000:8000 fenfa/fenfa:latest
+docker run -d --name fenfa -p 8000:8000 ghcr.io/ivine/fenfa:arm64
 ```
 
 访问 `http://localhost:8000`（或 `/admin`） 直接进入内网管理后台，无需登录。客户端下载目录位于 `/catalog`。上传时填写上传 Token，默认值为 `dev-upload-token`，可通过 `FENFA_UPLOAD_TOKEN` 配置。管理 API 同样免登录，部署时仅向受信任内网开放。
@@ -52,10 +54,55 @@ docker run -d \
   -e FENFA_PRIMARY_DOMAIN=https://your-domain.com \
   -v ./data:/data \
   -v ./uploads:/app/uploads \
-  fenfa/fenfa:latest
+  ghcr.io/ivine/fenfa:arm64
 ```
 
 也可以挂载 [`config.json`](docs/config.example.json) 进行完整配置。
+
+### GitHub 分架构镜像构建
+
+推送工作流到 GitHub 默认分支后，在 Actions 中按需手动运行：
+
+| 工作流 | 原生构建环境 | 镜像 |
+| --- | --- | --- |
+| Build Docker Image (ARM64) | ubuntu-24.04-arm | ghcr.io/ivine/fenfa:arm64 |
+| Build Docker Image (AMD64) | ubuntu-24.04 | ghcr.io/ivine/fenfa:amd64 |
+
+64 位树莓派只需运行 ARM64 工作流，并将 Compose 的 `image` 设置为 `ghcr.io/ivine/fenfa:arm64`，然后执行 `docker compose pull && docker compose up -d`。两个工作流独立触发、独立缓存，使用 GitHub 自动提供的 `GITHUB_TOKEN` 发布镜像。
+
+这两个工作流不再更新原来的 `latest` 标签，请按设备架构切换标签。私有镜像需要先在部署机器上登录 GHCR。
+
+仓库所有者决定镜像命名空间：本仓库为 `ivine`，Fork 后请使用自己的 GitHub 用户或组织名称。先运行对应工作流并确认成功，再拉取该标签。
+
+将现有 `compose.yaml` 中的镜像改为对应架构，保留原有数据挂载及其他配置：
+
+```yaml
+services:
+  fenfa:
+    image: ghcr.io/ivine/fenfa:arm64
+```
+
+在 Compose 文件所在目录更新服务：
+
+```bash
+docker compose pull && docker compose up -d
+```
+
+以上 YAML 仅展示需要修改的镜像字段，不是完整部署配置。AMD64 机器改用 `ghcr.io/ivine/fenfa:amd64`。已有旧工作流运行时，请先结束旧构建，再使用新工作流。
+
+本地辅助脚本的默认值未改变。使用 `docker-run.sh` 时显式指定镜像；私有镜像先登录，并在运行前拉取：
+
+```bash
+docker login ghcr.io
+docker pull ghcr.io/ivine/fenfa:arm64
+IMAGE=ghcr.io/ivine/fenfa:arm64 sh ./scripts/docker-run.sh
+```
+
+手动构建并推送时显式指定仓库、标签及架构（需要可构建该架构的 Buildx 环境）：
+
+```bash
+IMAGE=ghcr.io/ivine/fenfa TAG=arm64 PLATFORMS=linux/arm64 PUSH=true sh ./scripts/docker-build.sh
+```
 
 ### 从源码构建
 
@@ -113,19 +160,6 @@ Fenfa 是 [OpenPRX](https://github.com/openprx) 的一部分，欢迎提交 Issu
 ## 开源协议
 
 [MIT](LICENSE)
-
-### GitHub 分架构镜像构建
-
-推送工作流到 GitHub 默认分支后，在 Actions 中按需手动运行：
-
-| 工作流 | 原生构建环境 | 镜像 |
-| --- | --- | --- |
-| Build Docker Image (ARM64) | ubuntu-24.04-arm | ghcr.io/ivine/fenfa:arm64 |
-| Build Docker Image (AMD64) | ubuntu-24.04 | ghcr.io/ivine/fenfa:amd64 |
-
-64 位树莓派只需运行 ARM64 工作流，并将 Compose 的 `image` 设置为 `ghcr.io/ivine/fenfa:arm64`，然后执行 `docker compose pull && docker compose up -d`。两个工作流独立触发、独立缓存，使用 GitHub 自动提供的 `GITHUB_TOKEN` 发布镜像。
-
-这两个工作流不再更新原来的 `latest` 标签，请按设备架构切换标签。私有镜像需要先在部署机器上登录 GHCR。
 
 ### 命令行智能上传
 

@@ -35,8 +35,10 @@ Part of the [OpenPRX](https://github.com/openprx) ecosystem — open-source infr
 
 ### Docker (recommended)
 
+These examples target ARM64 devices, including a Raspberry Pi running a 64-bit OS. On Intel/AMD x86-64 machines, replace the `:arm64` tag with `:amd64`.
+
 ```bash
-docker run -d --name fenfa -p 8000:8000 fenfa/fenfa:latest
+docker run -d --name fenfa -p 8000:8000 ghcr.io/ivine/fenfa:arm64
 ```
 
 Visit `http://localhost:8000/admin`, login with token `dev-admin-token`.
@@ -53,7 +55,7 @@ docker run -d \
   -e FENFA_PRIMARY_DOMAIN=https://your-domain.com \
   -v ./data:/data \
   -v ./uploads:/app/uploads \
-  fenfa/fenfa:latest
+  ghcr.io/ivine/fenfa:arm64
 ```
 
 Or mount a [`config.json`](docs/config.example.json) for full control:
@@ -62,7 +64,46 @@ Or mount a [`config.json`](docs/config.example.json) for full control:
 docker run -d --name fenfa -p 8000:8000 \
   -v ./data:/data -v ./uploads:/app/uploads \
   -v ./config.json:/app/config.json:ro \
-  fenfa/fenfa:latest
+  ghcr.io/ivine/fenfa:arm64
+```
+
+### GitHub image builds by architecture
+
+Push the workflows to the default branch, then open GitHub Actions and manually run the workflow for your deployment machine:
+
+| Workflow | Native runner | Image |
+| --- | --- | --- |
+| Build Docker Image (ARM64) | ubuntu-24.04-arm | ghcr.io/ivine/fenfa:arm64 |
+| Build Docker Image (AMD64) | ubuntu-24.04 | ghcr.io/ivine/fenfa:amd64 |
+
+Each workflow runs independently, has its own build cache, and publishes using the automatically provided `GITHUB_TOKEN`. Run only ARM64 for a 64-bit Raspberry Pi. Wait for a successful build before pulling the tag. Forks publish under their own repository owner's namespace instead of `ivine`.
+
+These workflows no longer update `latest`. Change the image in your existing `compose.yaml`, preserving your volumes and other settings:
+
+```yaml
+services:
+  fenfa:
+    image: ghcr.io/ivine/fenfa:arm64
+```
+
+This snippet only shows the image setting, not a complete deployment configuration. Use `:amd64` on x86-64 machines. From the Compose directory, run:
+
+```bash
+docker compose pull && docker compose up -d
+```
+
+Private images require logging in to GHCR first. If an old workflow is still running, stop it before using the new workflows. The local helper scripts retain their original defaults; explicitly select and pull the image before running the deployment script:
+
+```bash
+docker login ghcr.io
+docker pull ghcr.io/ivine/fenfa:arm64
+IMAGE=ghcr.io/ivine/fenfa:arm64 sh ./scripts/docker-run.sh
+```
+
+To build and push manually, use a Buildx environment capable of building the selected architecture and specify the repository, tag, and platform:
+
+```bash
+IMAGE=ghcr.io/ivine/fenfa TAG=arm64 PLATFORMS=linux/arm64 PUSH=true sh ./scripts/docker-build.sh
 ```
 
 ### Build from source
