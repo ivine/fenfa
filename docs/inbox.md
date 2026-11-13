@@ -7,3 +7,6 @@
 
 ## GitHub 多架构容器发布
 通过 GitHub Actions 手动构建 AMD64 和 ARM64 镜像并发布到 GHCR，供 64 位树莓派通过 Docker Compose 拉取。使用工作流自带的 GITHUB_TOKEN。
+
+## 平台命名统一
+将中文界面和中文说明中的“变体”统一称为“平台”，同步按钮、提示和筛选文案；保留现有 API 字段和数据结构。
