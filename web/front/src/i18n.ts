@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 
 function detectLanguage(): 'zh' | 'en' {
   return navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en'
@@ -153,16 +153,20 @@ const translations = {
 
 export type Language = 'zh' | 'en'
 
-let currentLanguage: Language = detectLanguage()
+const currentLanguage = ref<Language>(detectLanguage())
+
+watchEffect(() => {
+  document.documentElement.lang = currentLanguage.value
+})
 
 export function useI18n() {
-  const t = computed(() => translations[currentLanguage])
+  const t = computed(() => translations[currentLanguage.value])
 
   const setLanguage = (lang: Language) => {
-    currentLanguage = lang
+    currentLanguage.value = lang
   }
 
-  const getLanguage = () => currentLanguage
+  const getLanguage = () => currentLanguage.value
 
   return { t, setLanguage, getLanguage }
 }

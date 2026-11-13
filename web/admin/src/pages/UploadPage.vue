@@ -6,7 +6,10 @@
     </div>
 
     <div class="card selectors-card">
-<div class="form-group"><label class="label">上传 Token</label><input v-model="token" type="password" class="input" placeholder="请输入上传 Token" autocomplete="off"></div>
+      <div class="form-group">
+        <label class="label">{{ t.upload.tokenLabel }}</label>
+        <input v-model="token" type="password" class="input" :placeholder="t.upload.tokenPlaceholder" autocomplete="off">
+      </div>
       <div class="selectors-grid">
         <div class="form-group">
           <label class="label">{{ t.apps.name }}</label>

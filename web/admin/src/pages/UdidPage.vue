@@ -109,7 +109,7 @@ import Pagination from '../components/Pagination.vue'
 
 const { token, handleAuthError: onAuthError } = useAuth()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const items = ref<any[]>([])
 const iosVariants = ref<any[]>([])
 const loading = ref(false)
@@ -205,7 +205,7 @@ async function exportCsv() {
 
 function formatTs(v: string | number | Date | null) {
   if (!v) return ''
-  try { return new Date(v).toLocaleString() } catch { return '' }
+  try { return new Date(v).toLocaleString(locale.value === 'zh' ? 'zh-CN' : 'en-US') } catch { return '' }
 }
 
 // Check if Apple API is configured

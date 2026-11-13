@@ -276,7 +276,7 @@ async function parseAppInfo() {
           reject(new Error(`HTTP ${xhr.status}`))
         }
       })
-      xhr.addEventListener('error', () => reject(new Error('Network error')))
+      xhr.addEventListener('error', () => reject(new Error(t.value.common.networkError)))
       xhr.open('POST', uploadBaseURL.value + '/admin/api/parse-app')
       xhr.setRequestHeader('X-Auth-Token', props.token)
       xhr.send(fd)
@@ -348,7 +348,7 @@ async function handleUpload() {
           reject(new Error(`HTTP ${xhr.status}`))
         }
       })
-      xhr.addEventListener('error', () => reject(new Error('Network error')))
+      xhr.addEventListener('error', () => reject(new Error(t.value.common.networkError)))
       xhr.open('POST', uploadBaseURL.value + '/upload')
       xhr.setRequestHeader('X-Auth-Token', props.token)
       xhr.send(fd)

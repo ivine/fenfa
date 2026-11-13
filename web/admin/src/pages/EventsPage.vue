@@ -67,7 +67,7 @@
           </thead>
           <tbody>
             <tr v-for="e in events" :key="e.ts + e.ip">
-              <td class="event-time">{{ new Date(e.ts).toLocaleString() }}</td>
+              <td class="event-time">{{ new Date(e.ts).toLocaleString(locale === 'zh' ? 'zh-CN' : 'en-US') }}</td>
               <td><span class="badge">{{ e.type }}</span></td>
               <td class="event-id">{{ e.variant_id }}</td>
               <td class="event-id">{{ e.release_id }}</td>
@@ -109,7 +109,7 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { token, handleAuthError } = useAuth()
 const { products } = useProducts()
 

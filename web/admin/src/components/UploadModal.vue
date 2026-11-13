@@ -7,7 +7,10 @@
       </div>
 
       <div class="modal-body">
-<div class="form-group"><label class="label">上传 Token</label><input v-model="uploadToken" type="password" class="input" placeholder="请输入上传 Token" autocomplete="off"></div>
+        <div class="form-group">
+          <label class="label">{{ t.upload.tokenLabel }}</label>
+          <input v-model="uploadToken" type="password" class="input" :placeholder="t.upload.tokenPlaceholder" autocomplete="off">
+        </div>
         <div class="app-info-section">
           <div class="info-item">
             <span class="info-label">{{ t.uploadModal.appName }}:</span>
@@ -279,7 +282,7 @@ async function handleUpload() {
         }
         reject(new Error(`HTTP ${xhr.status}`))
       })
-      xhr.addEventListener('error', () => reject(new Error('Network error')))
+      xhr.addEventListener('error', () => reject(new Error(t.value.common.networkError)))
       xhr.open('POST', uploadBaseURL.value + '/upload')
       xhr.setRequestHeader('X-Auth-Token', token)
       xhr.send(fd)

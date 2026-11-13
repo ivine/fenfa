@@ -52,7 +52,7 @@
                 <td class="version">{{ r.version }}</td>
                 <td>{{ r.build }}</td>
                 <td><span class="download-count">{{ r.download_count }}</span></td>
-                <td class="date">{{ new Date(r.created_at).toLocaleString() }}</td>
+                <td class="date">{{ new Date(r.created_at).toLocaleString(locale === 'zh' ? 'zh-CN' : 'en-US') }}</td>
               </tr>
               <tr v-if="!statsData.releases?.length">
                 <td colspan="4" class="empty-state">{{ t.stats.noReleases }}</td>
@@ -84,7 +84,7 @@ const props = defineProps<{
 }>()
 
 const route = useRoute()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { token, handleAuthError } = useAuth()
 const { products } = useProducts()
 

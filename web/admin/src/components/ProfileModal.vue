@@ -167,7 +167,7 @@ interface AppLite { id: string; name?: string; platform?: string }
 
 const props = defineProps<{ show: boolean; app: AppLite | null; token: string }>()
 const emit = defineEmits<{ close: [] }>()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const loading = ref(false)
 const profile = ref<Profile | null>(null)
@@ -208,7 +208,7 @@ const isExpiringSoon = computed(() => {
 
 function formatDate(dateStr: string) {
   if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString(undefined, {
+  return new Date(dateStr).toLocaleDateString(locale.value === 'zh' ? 'zh-CN' : 'en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'

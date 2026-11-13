@@ -1,5 +1,6 @@
 export default {
   common: {
+    networkError: '网络连接失败，请重试。',
     loading: '加载中...',
     refresh: '刷新',
     query: '查询',
@@ -48,6 +49,8 @@ export default {
   },
 
   apps: {
+    architecture: '架构',
+    installerType: '安装包类型',
     title: '产品列表',
     subtitle: '管理统一产品页以及各平台',
     searchPlaceholder: '搜索产品名称或 slug',
@@ -163,6 +166,8 @@ export default {
   },
 
   upload: {
+    tokenLabel: '上传 Token',
+    tokenPlaceholder: '请输入上传 Token',
     title: '上传构建',
     subtitle: '向产品的指定平台上传新的安装包',
     smartMode: '智能上传',
@@ -432,6 +437,7 @@ export default {
   },
 
   apple: {
+    statusFailed: '无法获取 Apple 配置状态',
     title: 'Apple Developer 配置',
     subtitle: '配置 App Store Connect API 凭证，用于自动注册设备',
     keyId: 'API Key ID',

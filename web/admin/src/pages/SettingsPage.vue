@@ -188,7 +188,7 @@
       <!-- Single Save Button -->
       <div class="save-bar">
         <div v-if="lastUpdated" class="info-text">
-          {{ t.settings.lastUpdated }}: {{ lastUpdated }}
+          {{ t.settings.lastUpdated }}: {{ new Date(lastUpdated).toLocaleString(locale === 'zh' ? 'zh-CN' : 'en-US') }}
         </div>
         <button type="submit" :disabled="saving" class="btn-primary btn-save">
           {{ saving ? t.settings.saving : t.settings.saveButton }}
@@ -207,7 +207,7 @@ import Icon from '../components/Icon.vue'
 
 const { token, handleAuthError: onAuthError } = useAuth()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const toast = useToast()
 
 const loading = ref(true)
@@ -284,7 +284,7 @@ async function loadSettings() {
       }
 
       if (data.data.updated_at) {
-        lastUpdated.value = new Date(data.data.updated_at).toLocaleString()
+        lastUpdated.value = data.data.updated_at
       }
 
       storageForm.storageType = data.data.storage_type || 'local'
@@ -393,7 +393,7 @@ async function handleSave() {
     if (data.data) {
       form.disableBindDevice = data.data.disable_bind_device === true
       if (data.data.updated_at) {
-        lastUpdated.value = new Date(data.data.updated_at).toLocaleString()
+        lastUpdated.value = data.data.updated_at
       }
       storageForm.storageType = data.data.storage_type || 'local'
       storageForm.maxBuildsPerVariant = data.data.max_builds_per_variant ?? 50
@@ -435,7 +435,7 @@ async function checkAppleStatus() {
       appleStatus.message = data.data.message
     }
   } catch {
-    appleStatus.message = 'Failed to check status'
+    appleStatus.message = t.value.apple.statusFailed
   }
 }
 

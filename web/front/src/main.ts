@@ -338,7 +338,7 @@ const App = {
       if (days < 7) return `${days} ${t.value.time.daysAgo}`
       if (days < 30) return `${Math.floor(days / 7)} ${t.value.time.weeksAgo}`
       if (days < 365) return `${Math.floor(days / 30)} ${t.value.time.monthsAgo}`
-      return date.toLocaleDateString()
+      return date.toLocaleDateString(locale())
     }
 
     function locale() {

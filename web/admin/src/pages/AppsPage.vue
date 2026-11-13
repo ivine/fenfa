@@ -66,7 +66,7 @@
                   <span v-if="product.published" class="status-dot status-on"><i></i>{{ t.apps.published }}</span>
                   <span v-else class="status-dot status-off"><i></i>{{ t.apps.unpublished }}</span>
                 </td>
-                <td class="product-date">{{ new Date(product.created_at).toLocaleString() }}</td>
+                <td class="product-date">{{ new Date(product.created_at).toLocaleString(locale === 'zh' ? 'zh-CN' : 'en-US') }}</td>
                 <td class="actions" @click.stop>
                   <button class="btn-text" @click="openDistribution(product)">
                     <Icon name="external-link" :size="13" />
@@ -139,8 +139,8 @@
 
                           <div class="variant-meta">
                             <div v-if="variant.identifier"><span class="meta-label">{{ t.apps.identifier }}:</span> <span class="mono">{{ variant.identifier }}</span></div>
-                            <div v-if="variant.arch"><span class="meta-label">Arch:</span> {{ variant.arch }}</div>
-                            <div v-if="variant.installer_type"><span class="meta-label">Installer:</span> {{ variant.installer_type }}</div>
+                            <div v-if="variant.arch"><span class="meta-label">{{ t.apps.architecture }}:</span> {{ variant.arch }}</div>
+                            <div v-if="variant.installer_type"><span class="meta-label">{{ t.apps.installerType }}:</span> {{ variant.installer_type }}</div>
                             <div v-if="variant.min_os"><span class="meta-label">{{ t.upload.minOS }}:</span> {{ variant.min_os }}</div>
                           </div>
 
@@ -150,7 +150,7 @@
                               <strong>{{ variant.releases[0].version }}</strong>
                               <span v-if="variant.releases[0].build">({{ t.upload.build }} {{ variant.releases[0].build }})</span>
                             </div>
-                            <div class="release-line muted">{{ new Date(variant.releases[0].created_at).toLocaleString() }}</div>
+                            <div class="release-line muted">{{ new Date(variant.releases[0].created_at).toLocaleString(locale === 'zh' ? 'zh-CN' : 'en-US') }}</div>
                             <div v-if="variant.releases[0].changelog" class="release-changelog">{{ variant.releases[0].changelog }}</div>
                           </div>
 
@@ -283,7 +283,7 @@ const router = useRouter()
 const { token, handleAuthError } = useAuth()
 const { products, loadingProducts: loading, productQuery, fetchProducts } = useProducts()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const toast = useToast()
 const confirm = useConfirmDialog()
 const localQuery = ref(productQuery.value)
